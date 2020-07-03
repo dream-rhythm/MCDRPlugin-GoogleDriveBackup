@@ -12,13 +12,16 @@ ServerPath = './server'
 gdbPath = './plugins/GoogleDriveBackup'
 TurnOffAutoSave = True
 DeleteLocalFileAfterUpload = True
-# 0:guest 1:user 2:helper 3:admin
+# 0:guest 1:user 2:helper 3:admin 4:owner
 MinimumPermissionLevel = {
-	'make': 1,
-	'list': 1,
+    'help':0,
+    'make': 1,
+    'getAuth': 4,
+    'setToken':4,
+    'setFolder':4,
 }
 WorldNames = [
-	'world',
+    'world',
 ]
 
 CredentialsFilePath = os.path.join(gdbPath,'auth_token.json')
