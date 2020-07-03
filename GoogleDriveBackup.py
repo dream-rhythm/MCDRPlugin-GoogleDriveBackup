@@ -2,7 +2,7 @@ import os
 import time
 import shutil
 from threading import Lock
-from pydrive.auth import GoogleAuth
+from pydrive.auth import GoogleAuth,ServiceAccountCredentials
 from pydrive.drive import GoogleDrive
 from oauth2client.client import GoogleCredentials
 
@@ -33,13 +33,14 @@ plugin_unloaded = False
 drive = None
 creating_backup = Lock()
 def showHelp(server,info):
-    print_message(server, info, '!!gdb make:建立並上傳備份檔到GoogleDrive')
-    print_message(server, info, '!!gdb getAuth:獲取GoogleDrive認證網址')
-    print_message(server, info, '!!gdb setToken <金鑰>:設定GoogleDirve認證碼')
-    print_message(server, info, '!!gdb setFolder <folderId>:設定上傳的目的資料夾')
+    print_message(server, info, f'{Prefix} make:建立並上傳備份檔到GoogleDrive')
+    print_message(server, info, f'{Prefix} getAuth:獲取GoogleDrive認證網址')
+    print_message(server, info, f'{Prefix} setToken <金鑰>:設定GoogleDirve認證碼')
+    print_message(server, info, f'{Prefix} setFolder <folderId>:設定上傳的目的資料夾')
 
 def on_load(server, old_module):
     GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = DriveAPISecerts
+    GoogleAuth.DEFAULT_SETTINGS['oauth_scope'] = ['https://www.googleapis.com/auth/drive']
     server.add_help_message('!!gdb help', '顯示GoogleDrive備份程式幫助')
 
 def on_unload(server):
@@ -84,7 +85,7 @@ def auth(server,info):
     if gauth.credentials is None:
         auth_url = gauth.GetAuthUrl() 
         server.execute('tellraw ' + info.player + ' {"text":"[GDB]: 請前往 §6此網站§r 進行Google Drive取得登入金鑰","underlined":"false","clickEvent":{"action":"open_url","value":"' + auth_url + '"}}')
-        server.replay(info,"並使用!!gdb setToken <金鑰>進行登入設定")
+        print_message(server, info,"並使用!!gdb setToken <金鑰>進行登入設定")
         return None
     elif gauth.access_token_expired:
         gauth.Refresh()
